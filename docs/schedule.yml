@@ -1,0 +1,74 @@
+post:
+summary: Schedule a new surgery
+description: |
+  Schedule a surgery for a doctor of the specified type.  
+  Returns 200 if scheduled immediately, or 202 if added to the queue.
+tags:
+  - Scheduling
+consumes:
+  - application/json
+produces:
+  - application/json
+parameters:
+  - in: body
+    name: doctor_type
+    required: true
+    schema:
+      type: object
+      required:
+        - doctor_type
+      properties:
+        doctor_type:
+          type: string
+          enum: [HEART, BRAIN]
+          example: HEART
+responses:
+  200:
+    description: Surgery scheduled successfully
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: SCHEDULED
+        request_id:
+          type: string
+          example: "req_12345"
+        room_id:
+          type: integer
+          example: 2
+        start_time:
+          type: string
+          format: date-time
+          example: "2025-07-24T14:00:00"
+        end_time:
+          type: string
+          format: date-time
+          example: "2025-07-24T16:00:00"
+  202:
+    description: Request added to queue (no available slots)
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: QUEUED
+        request_id:
+          type: string
+          example: "req_12346"
+  400:
+    description: Bad Request - missing or invalid input
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Missing doctor_type in payload"
+  422:
+    description: Invalid doctor type provided
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Unknown doctor type: XYZ"
